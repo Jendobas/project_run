@@ -26,6 +26,9 @@ SECRET_KEY = 'django-insecure-g*g7qv5h^5=xvq@zka9b-@0wo@yp5e2yo6c)2_7wdmcbf(2p$9
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+COMPANY_NAME = 'Ночной забег',
+SLOGAN = 'Ноль - тоже результат',
+CONTACTS = 'Город Москва, улица Пушкина, дом 3'
 
 
 # Application definition
