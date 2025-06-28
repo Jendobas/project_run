@@ -13,6 +13,5 @@ router.register('api/users', GetUsers)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/company_details/', company_details),
-    path('', include(router.urls)),
     path('', include(router.urls))
 ]
