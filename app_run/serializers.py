@@ -28,3 +28,9 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.is_staff:
             return 'coach'
         return 'athlete'
+
+
+class RunStatus(serializers.ModelSerializer):
+    class Meta:
+        model = Run
+        fields = ['id', 'athlete', 'status']
