@@ -15,5 +15,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/company_details/', company_details),
     path('', include(router.urls)),
-    path('api/runs/<run_id>/<condition>', StartView.as_view())
+    path('api/runs/<run_id>/<condition>/', StartView.as_view())
 ]
