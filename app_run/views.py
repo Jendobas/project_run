@@ -1,8 +1,10 @@
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -21,11 +23,20 @@ def company_details(request):
     })
 
 
+class RunPagination(PageNumberPagination):  # Настраиваем пагинацию в этом классе
+    page_size_query_param = 'size'  # Разрешаем изменять количество объектов через query параметр size в url
+    max_page_size = 50   # Ограничиваем максимальное количество объектов на странице
+
+
 class RunViewSet(viewsets.ModelViewSet):
     # с select_related мы можем сделать один запрос для получения всех Run и User данных
     # так избавимся от проблемы n + 1
     queryset = Run.objects.select_related('athlete').all()
     serializer_class = RunSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]  # Указываем какой класс будет исп. для фильтра и сортировки
+    filterset_fields = ['status', 'athlete']  # Поля, по которым будет происходить фильтрация
+    ordering_fields = ['created_at']  # Поля, по которым будет возможна сортировка
+    pagination_class = RunPagination  # Указываем пагинацию
 
 
 class GetUsers(viewsets.ReadOnlyModelViewSet):
@@ -33,9 +44,12 @@ class GetUsers(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
 
-    filter_backends = [SearchFilter]  # Подключаем SearchFilter здесь
+    filter_backends = [SearchFilter, OrderingFilter]  # Подключаем SearchFilter здесь и сортировку
     search_fields = ['first_name', 'last_name']  # Указываем поля по которым будет вестись поиск
+    ordering_fields = ['date_joined']
+    pagination_class = RunPagination
 
+    # Для динамической фильтрации данных будем переопределять метод get_queryset
     def get_queryset(self):
         qs = self.queryset
         type = self.request.query_params.get('type')
