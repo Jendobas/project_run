@@ -4,12 +4,12 @@ from django.contrib.auth.models import User
 
 class Run(models.Model):
     INIT = 'init'
-    IN_PROGRESS = 'in_progres'
+    IN_PROGRESS = 'in_progress'
     FINISHED = 'finished'
 
     STATUS = [
         (INIT, 'init'),
-        (IN_PROGRESS, 'in_progres'),
+        (IN_PROGRESS, 'in_progress'),
         (FINISHED, 'finished')
     ]
 
