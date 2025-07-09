@@ -22,16 +22,19 @@ def company_details(request):
 
 
 class RunViewSet(viewsets.ModelViewSet):
+    # с select_related мы можем сделать один запрос для получения всех Run и User данных
+    # так избавимся от проблемы n + 1
     queryset = Run.objects.select_related('athlete').all()
     serializer_class = RunSerializer
 
 
 class GetUsers(viewsets.ReadOnlyModelViewSet):
+    # получаем всех пользователей, есть фильтр тренеры/атлеты
     queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
 
-    filter_backends = [SearchFilter]
-    search_fields = ['first_name', 'last_name']
+    filter_backends = [SearchFilter]  # Подключаем SearchFilter здесь
+    search_fields = ['first_name', 'last_name']  # Указываем поля по которым будет вестись поиск
 
     def get_queryset(self):
         qs = self.queryset
@@ -44,6 +47,9 @@ class GetUsers(viewsets.ReadOnlyModelViewSet):
 
 
 class StartView(APIView):
+    # создание статуса забега
+    # принимаем 'start' значит забег 'in_progress'
+    # принимаем 'stop' значит забег 'finished'
 
     def post(self, request, run_id, condition):
         item = get_object_or_404(Run, pk=run_id)
