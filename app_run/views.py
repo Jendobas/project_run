@@ -33,6 +33,7 @@ class RunViewSet(viewsets.ModelViewSet):
     # так избавимся от проблемы n + 1
     queryset = Run.objects.select_related('athlete').all()
     serializer_class = RunSerializer
+
     filter_backends = [DjangoFilterBackend, OrderingFilter]  # Указываем какой класс будет исп. для фильтра и сортировки
     filterset_fields = ['status', 'athlete']  # Поля, по которым будет происходить фильтрация
     ordering_fields = ['created_at']  # Поля, по которым будет возможна сортировка
@@ -48,6 +49,8 @@ class GetUsers(viewsets.ReadOnlyModelViewSet):
     search_fields = ['first_name', 'last_name']  # Указываем поля по которым будет вестись поиск
     ordering_fields = ['date_joined']
     pagination_class = RunPagination
+
+    # runs_finished = User.objects.filter(runs__status='finished')
 
     # Для динамической фильтрации данных будем переопределять метод get_queryset
     def get_queryset(self):

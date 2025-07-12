@@ -10,6 +10,13 @@ class UserForRunSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'last_name', 'first_name']
 
 
+# class FinishedRunSerializer(serializers.ModelSerializer):
+#     # Этот сериалайзер будем вкладывать
+#     class Meta:
+#         model = Run
+#         fields = ['status']
+
+
 class RunSerializer(serializers.ModelSerializer):
     athlete_data = UserForRunSerializer(source='athlete',
                                         read_only=True)  # Добавляем UserForRunSerializer как вложенный
@@ -22,15 +29,19 @@ class RunSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()  # позволяет динамически вычислять значение для этого поля
+    runs_finished = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type']
+        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type', 'runs_finished']
 
     def get_type(self, obj):  # здесь будет вычисляться поле type
         if obj.is_staff:
             return 'coach'
         return 'athlete'
+
+    def get_runs_finished(self, obj):
+        return obj.runs.filter(status='finished').count()
 
 
 class RunStatus(serializers.ModelSerializer):
