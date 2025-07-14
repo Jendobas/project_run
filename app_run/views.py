@@ -10,8 +10,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 
-from app_run.models import Run
-from app_run.serializers import RunSerializer, UserSerializer, RunStatus
+from app_run.models import Run, AthleteInfo
+from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer
 
 
 @api_view(['GET'])
@@ -25,7 +25,7 @@ def company_details(request):
 
 class RunPagination(PageNumberPagination):  # Настраиваем пагинацию в этом классе
     page_size_query_param = 'size'  # Разрешаем изменять количество объектов через query параметр size в url
-    max_page_size = 50   # Ограничиваем максимальное количество объектов на странице
+    max_page_size = 50  # Ограничиваем максимальное количество объектов на странице
 
 
 class RunViewSet(viewsets.ModelViewSet):
@@ -49,8 +49,6 @@ class GetUsers(viewsets.ReadOnlyModelViewSet):
     search_fields = ['first_name', 'last_name']  # Указываем поля по которым будет вестись поиск
     ordering_fields = ['date_joined']
     pagination_class = RunPagination
-
-    # runs_finished = User.objects.filter(runs__status='finished')
 
     # Для динамической фильтрации данных будем переопределять метод get_queryset
     def get_queryset(self):
@@ -83,3 +81,28 @@ class StartView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AthleteInfoView(APIView):
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        athlete_more_info, _ = AthleteInfo.objects.get_or_create(user_id_id=user.id, defaults={'goals': '',
+                                                                                               'weight': 0})
+        serializer = AthleteInfoSerializer(athlete_more_info, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        if int(request.data['weight']) < 0 or int(request.data['weight']) >= 900:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        athlete_more_info, _ = AthleteInfo.objects.update_or_create(user_id_id=user.id,
+                                                                    defaults={'goals': request.data['goals'],
+                                                                              'weight': request.data['weight']})
+        serializer = AthleteInfoSerializer(athlete_more_info, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+

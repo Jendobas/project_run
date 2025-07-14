@@ -20,3 +20,9 @@ class Run(models.Model):
 
     def __str__(self):
         return f'{self.athlete}'
+
+
+class AthleteInfo(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='athlete_info')
+    goals = models.TextField(default=None)
+    weight = models.IntegerField(default=None)
