@@ -10,8 +10,20 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo
-from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer
+from app_run.models import Run, AthleteInfo, Challenge
+from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer
+
+
+def check_runs(run_id):
+    item = Run.objects.get(pk=run_id).athlete
+    serializer = UserSerializer(item)
+    count_runs = serializer.data['runs_finished']
+    if count_runs >= 10:
+        new_challange = Challenge.objects.create(
+            full_name='Сделай 10 Забегов!',
+            athlete=item
+        )
+    # new_challange.save()
 
 
 @api_view(['GET'])
@@ -79,12 +91,14 @@ class StartView(APIView):
         serializer = RunSerializer(item, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            if condition == 'stop':
+                check_runs(run_id)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AthleteInfoView(APIView):
-
+    # добавляет и изменяет записи в таб AthleteInfo о целях и весе бегуна
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         athlete_more_info, _ = AthleteInfo.objects.get_or_create(user_id_id=user.id, defaults={'goals': '',
@@ -107,3 +121,16 @@ class AthleteInfoView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+class AllChallenges(viewsets.ModelViewSet):
+    # возвращает список всех записей всех челленджей
+    queryset = Challenge.objects.all()
+    serializer_class = ChallengeSerializer
+
+    def get_queryset(self):
+        if self.queryset:
+            qs = self.queryset
+            athlete = self.request.query_params.get('athlete')
+            qs = qs.filter(athlete=athlete)
+            return qs
+        return super().get_queryset()
