@@ -18,12 +18,12 @@ def check_runs(run_id):
     item = Run.objects.get(pk=run_id).athlete
     serializer = UserSerializer(item)
     count_runs = serializer.data['runs_finished']
-    if count_runs >= 10:
+    if count_runs == 10:
         new_challange = Challenge.objects.create(
             full_name='Сделай 10 Забегов!',
             athlete=item
         )
-    # new_challange.save()
+    new_challange.save()
 
 
 @api_view(['GET'])
@@ -131,6 +131,7 @@ class AllChallenges(viewsets.ModelViewSet):
         if self.queryset:
             qs = self.queryset
             athlete = self.request.query_params.get('athlete')
-            qs = qs.filter(athlete=athlete)
+            if athlete:
+                print(athlete)
+                qs = qs.filter(athlete=athlete)
             return qs
-        return super().get_queryset()
