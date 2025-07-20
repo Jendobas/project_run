@@ -12,6 +12,7 @@ router = DefaultRouter()
 router.register('api/runs', RunViewSet)
 router.register('api/users', GetUsers)
 router.register('api/challenges', AllChallenges)
+router.register('api/positions', PositionViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -19,5 +20,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api/runs/<run_id>/<condition>/', StartView.as_view()),
     path('api/athlete_info/<user_id>/', AthleteInfoView.as_view()),
-    path('api/positions/<position_id>/', PositionViewSet.as_view()),
+    # path('api/positions/<position_id>/', PositionViewSet.as_view()),
 ]
