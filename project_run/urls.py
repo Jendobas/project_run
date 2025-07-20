@@ -3,7 +3,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from app_run.models import Run
-from app_run.views import company_details, GetUsers, RunViewSet, StartView, AthleteInfoView, AllChallenges
+from app_run.views import company_details, GetUsers, RunViewSet, StartView, AthleteInfoView, AllChallenges, \
+    PositionViewSet
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -18,4 +19,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api/runs/<run_id>/<condition>/', StartView.as_view()),
     path('api/athlete_info/<user_id>/', AthleteInfoView.as_view()),
+    path('api/positions/<position_id>/', PositionViewSet.as_view()),
 ]

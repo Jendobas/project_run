@@ -53,3 +53,7 @@ class ChallengeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Challenge
         fields = ['full_name', 'athlete']
+
+
+class PositionSerializer(serializers.ModelSerializer):
+    pass

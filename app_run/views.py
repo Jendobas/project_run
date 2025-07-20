@@ -10,11 +10,13 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo, Challenge
-from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer
+from app_run.models import Run, AthleteInfo, Challenge, Position
+from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
+    PositionSerializer
 
 
 def check_runs(run_id):
+    # проверяет, сделал ли атлет ровно 10 забегов, если да, то создается запись в таблице Challenge
     item = Run.objects.get(pk=run_id).athlete
     serializer = UserSerializer(item)
     count_runs = serializer.data['runs_finished']
@@ -123,7 +125,8 @@ class AthleteInfoView(APIView):
 
 
 class AllChallenges(viewsets.ModelViewSet):
-    # возвращает список всех записей всех челленджей
+    # возвращает список всех записей всех челленджей, если есть query,
+    # то возвращает достижения конкретного атлета
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
 
@@ -135,3 +138,8 @@ class AllChallenges(viewsets.ModelViewSet):
                 print(athlete)
                 qs = qs.filter(athlete=athlete)
             return qs
+
+
+class PositionViewSet(viewsets.ModelViewSet):
+    serializer_class = PositionSerializer
+

@@ -31,3 +31,7 @@ class AthleteInfo(models.Model):
 class Challenge(models.Model):
     full_name = models.CharField()
     athlete = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenge')
+
+
+class Position(models.Model):
+    pass
