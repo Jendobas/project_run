@@ -58,4 +58,16 @@ class ChallengeSerializer(serializers.ModelSerializer):
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = ['latitude', 'longitude']
+        fields = ['run', 'latitude', 'longitude']
+
+    def validate_run(self, value):
+        # run_status = Run.objects.get(id=value.id).id
+        run_status = Run.objects.get(id=value.id).status
+        if run_status != 'in_progress':
+            raise serializers.ValidationError("Статус забега должен быть 'in progress'")
+        return value
+
+    def validate(self, data):
+        if -90.0 <= data['latitude'] <= 90.0 and -180.0 <= data['longitude'] <= 180.0:
+            return data
+        raise serializers.ValidationError("latitude от -90.0 до +90.0, longitude от -180.0 до +180.0")
