@@ -34,6 +34,7 @@ class Challenge(models.Model):
 
 
 class Position(models.Model):
+
     run = models.ForeignKey(Run, on_delete=models.CASCADE, related_name='position')
     latitude = models.FloatField(default=None)
     longitude = models.FloatField(default=None)
