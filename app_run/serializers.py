@@ -66,9 +66,12 @@ class PositionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Статус забега должен быть 'in progress'")
         return value
 
-    def validate(self, data):
-        if not -90.0 <= data['latitude']:
+    def validate_latitude(self, value):
+        if not -90.0 <= value <= 90.0:
             raise serializers.ValidationError("latitude от -90.0 до +90.0")
-        if not -180.0 <= data['longitude'] <= 180.0:
+        return value
+
+    def validate_longitude(self, value):
+        if not -180.0 <= value <= 180.0:
             raise serializers.ValidationError("longitude от -180.0 до +180.0")
-        return data
+        return value
