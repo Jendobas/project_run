@@ -25,7 +25,7 @@ def check_runs(run_id):
             full_name='Сделай 10 Забегов!',
             athlete=item
         )
-    new_challange.save()
+        new_challange.save()
 
 
 @api_view(['GET'])
