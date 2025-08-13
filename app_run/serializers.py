@@ -67,6 +67,8 @@ class PositionSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        if not -90.0 <= data['latitude'] <= 90.0 or not -180.0 <= data['longitude'] <= 180.0:
-            raise serializers.ValidationError("latitude от -90.0 до +90.0, longitude от -180.0 до +180.0")
+        if not -90.0 <= data['latitude']:
+            raise serializers.ValidationError("latitude от -90.0 до +90.0")
+        if not -180.0 <= data['longitude'] <= 180.0:
+            raise serializers.ValidationError("longitude от -180.0 до +180.0")
         return data
