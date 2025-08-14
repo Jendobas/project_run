@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from app_run.models import Run, AthleteInfo, Challenge, Position
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
     PositionSerializer
+from geopy.distance import geodesic
 
 
 def check_runs(run_id):
@@ -27,6 +28,18 @@ def check_runs(run_id):
         )
         new_challange.save()
 
+
+def count_distance(run_id):
+    distance_field = Run.objects.get(pk=run_id)
+    positions = Position.objects.filter(run__id=run_id)
+    points = []
+    for position in positions:
+        points.append((position.latitude, position.longitude))
+
+    distance = geodesic(*points).kilometers
+
+    distance_field.distance = distance
+    distance_field.save()
 
 @api_view(['GET'])
 def company_details(request):
@@ -95,6 +108,7 @@ class StartView(APIView):
             serializer.save()
             if condition == 'stop':
                 check_runs(run_id)
+                count_distance(run_id)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -141,6 +155,7 @@ class AllChallenges(viewsets.ModelViewSet):
 
 
 class PositionViewSet(viewsets.ModelViewSet):
+    # принимаем и записываем широту и долготу - координаты забега
     queryset = Position.objects.all()
     serializer_class = PositionSerializer
     filter_backends = [DjangoFilterBackend]
