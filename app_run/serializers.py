@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class UserForRunSerializer(serializers.ModelSerializer):
-    # Этот сериалайзер будем вкладывать
+    # Этот сериалайзер будем вкладывать в RunSerializer
     class Meta:
         model = User
         fields = ['id', 'username', 'last_name', 'first_name']

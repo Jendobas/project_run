@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -30,6 +31,7 @@ def check_runs(run_id):
 
 
 def count_distance(run_id):
+    # запускается после stop забега и высчитывает расстояние, которое побежал атлет
     distance_field = Run.objects.get(pk=run_id)
     positions = Position.objects.filter(run__id=run_id)
     points = []
@@ -40,6 +42,22 @@ def count_distance(run_id):
 
     distance_field.distance = distance
     distance_field.save()
+
+
+def check_50_km(run_id):
+    item = Run.objects.get(pk=run_id).athlete
+    sum = Run.objects.filter(athlete=item).aggregate(Sum('distance'))
+    challenge = Challenge.objects.filter(athlete=item)
+    for i in challenge:
+        if i.full_name == 'Пробеги 50 километров!':
+            return
+    if sum['distance__sum'] >= 50:
+        new_challange = Challenge.objects.create(
+            full_name='Пробеги 50 километров!',
+            athlete=item
+        )
+        new_challange.save()
+
 
 @api_view(['GET'])
 def company_details(request):
@@ -109,6 +127,7 @@ class StartView(APIView):
             if condition == 'stop':
                 check_runs(run_id)
                 count_distance(run_id)
+                check_50_km(run_id)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -149,7 +168,6 @@ class AllChallenges(viewsets.ModelViewSet):
             qs = self.queryset
             athlete = self.request.query_params.get('athlete')
             if athlete:
-                print(athlete)
                 qs = qs.filter(athlete=athlete)
             return qs
 
