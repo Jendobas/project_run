@@ -35,7 +35,15 @@ class Challenge(models.Model):
 
 
 class Position(models.Model):
-
     run = models.ForeignKey(Run, on_delete=models.CASCADE)
     latitude = models.FloatField(default=None)
     longitude = models.FloatField(default=None)
+
+
+class CollectibleItem(models.Model):
+    name = models.CharField()
+    uid = models.CharField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    picture = models.CharField()
+    value = models.IntegerField()

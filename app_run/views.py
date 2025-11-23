@@ -11,9 +11,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo, Challenge, Position
+from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
-    PositionSerializer
+    PositionSerializer, CollectibleSerializer
 from geopy.distance import geodesic
 
 
@@ -189,3 +189,8 @@ class PositionViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CollectibleView(viewsets.ModelViewSet):
+    queryset = CollectibleItem.objects.all()
+    serializer_class = CollectibleSerializer
