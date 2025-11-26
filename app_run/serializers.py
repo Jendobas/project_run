@@ -79,7 +79,17 @@ class PositionSerializer(serializers.ModelSerializer):
 
 class CollectibleSerializer(serializers.ModelSerializer):
     picture = serializers.URLField()
+
     class Meta:
         model = CollectibleItem
         fields = ['name', 'uid', 'value', 'latitude', 'longitude', 'picture']
 
+    def validate_latitude(self, value):
+        if not -90.0 <= value <= 90.0:
+            raise serializers.ValidationError("latitude от -90.0 до +90.0")
+        return value
+
+    def validate_longitude(self, value):
+        if not -180.0 <= value <= 180.0:
+            raise serializers.ValidationError("longitude от -180.0 до +180.0")
+        return value
