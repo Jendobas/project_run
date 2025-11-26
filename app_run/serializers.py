@@ -78,6 +78,8 @@ class PositionSerializer(serializers.ModelSerializer):
 
 
 class CollectibleSerializer(serializers.ModelSerializer):
+    picture = serializers.URLField()
     class Meta:
         model = CollectibleItem
-        fields = '__all__'
+        fields = ['name', 'uid', 'value', 'latitude', 'longitude', 'picture']
+

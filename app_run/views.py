@@ -1,3 +1,4 @@
+import openpyxl
 from django.db.models import Sum
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
@@ -194,3 +195,33 @@ class PositionViewSet(viewsets.ModelViewSet):
 class CollectibleView(viewsets.ModelViewSet):
     queryset = CollectibleItem.objects.all()
     serializer_class = CollectibleSerializer
+
+
+class UploadFileView(viewsets.ModelViewSet):
+    queryset = CollectibleItem.objects.all()
+    serializer_class = CollectibleSerializer
+
+    def create(self, request, *args, **kwargs):
+        file = request.FILES.get('file')
+        workbook = openpyxl.load_workbook(file)
+        sheet = workbook.active
+        broken_lines = []
+
+        for row in sheet.iter_rows(values_only=True, min_row=2):
+            row_data = {
+                'name': row[0],
+                'uid': row[1],
+                'value': row[2],
+                'latitude': row[3],
+                'longitude': row[4],
+                'picture': row[5]
+            }
+
+            serializer = self.get_serializer(data=row_data)
+
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                broken_lines.append(list(row))
+
+        return Response(broken_lines)
