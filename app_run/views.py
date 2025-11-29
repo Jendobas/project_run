@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 
 from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
-    PositionSerializer, CollectibleSerializer
+    PositionSerializer, CollectibleSerializer, UserDetailSerializer
 from geopy.distance import geodesic
 
 
@@ -95,6 +95,15 @@ class GetUsers(viewsets.ReadOnlyModelViewSet):
     search_fields = ['first_name', 'last_name']  # Указываем поля по которым будет вестись поиск
     ordering_fields = ['date_joined']
     pagination_class = RunPagination
+
+    def get_serializer_class(self):
+        # Возвращаем базовый сериализатор для метода list
+        if self.action == 'list':
+            return UserSerializer
+        # Возвращаем детализированный сериализатор для метода retrieve
+        elif self.action == 'retrieve':
+            return UserDetailSerializer
+        return super().get_serializer_class()
 
     # Для динамической фильтрации данных будем переопределять метод get_queryset
     def get_queryset(self):
@@ -193,17 +202,21 @@ class PositionViewSet(viewsets.ModelViewSet):
 
 
 class CollectibleView(viewsets.ModelViewSet):
+    # вернёт список CollectibleItem из БД
     queryset = CollectibleItem.objects.all()
     serializer_class = CollectibleSerializer
 
 
 class UploadFileView(viewsets.ModelViewSet):
+    # view принимает xlsx-файл, читает, валидирует его и записывает эти данные в базу
+    # неправильные строки записывает в broken_lines и возвращает в виде списка списков
     queryset = CollectibleItem.objects.all()
     serializer_class = CollectibleSerializer
 
     def create(self, request, *args, **kwargs):
-        file = request.FILES.get('file')
-        workbook = openpyxl.load_workbook(file)
+        file = request.FILES.get('file')  # получаем файл из запроса
+        # поле в присланном request-e мы назвали file (выше)
+        workbook = openpyxl.load_workbook(file)  # открывает Excel файл
         sheet = workbook.active
         broken_lines = []
 

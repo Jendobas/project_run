@@ -37,6 +37,23 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.runs.filter(status='finished').count()
 
 
+class UserDetailSerializer(UserSerializer):  # дополнительный сериалайзер для GetUsers
+    items = serializers.SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        model = User
+        fields = UserSerializer.Meta.fields + ['items']
+
+    def get_items(self, obj):  # здесь будет вычисляться поле items
+        return [
+            {
+                'name': item.name,
+            }
+            for item in obj.collectible_items.all()
+        ]
+
+
+
 class RunStatus(serializers.ModelSerializer):
     class Meta:
         model = Run
