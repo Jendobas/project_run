@@ -51,6 +51,8 @@ def search_collectible(coordinates):
     current_point = Point(coordinates['latitude'], coordinates['longitude'])
 
     for i in collectible_items:
+        if -90 > i.latitude > 90 or -180 > i.longitude > 180:
+            continue
         point = (i.latitude, i.longitude)
         distance_between_two_points = geodesic(current_point, point).kilometers
 
@@ -206,12 +208,11 @@ class PositionViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-
-            self.perform_create(serializer)
-            coordinates = request.data
-            search_collectible(coordinates)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        coordinates = request.data
+        search_collectible(coordinates)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
