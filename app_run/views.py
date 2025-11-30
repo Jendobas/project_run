@@ -48,16 +48,13 @@ def count_distance(run_id):
 
 def search_collectible(coordinates):
     collectible_items = CollectibleItem.objects.all()
-    if -90.0 <= float(coordinates['latitude']) <= 90.0:
-        if -180.0 <= float(coordinates['longitude']) <= 180.0:
-            current_point = Point(coordinates['latitude'], coordinates['longitude'])
-    else:
+    if not -90.0 <= float(coordinates['latitude']) <= 90.0 or not -180.0 <= float(coordinates['longitude']) <= 180.0:
         return
+    current_point = Point(coordinates['latitude'], coordinates['longitude'])
 
     for i in collectible_items:
-        if -90.0 > float(i.latitude) > 90.0:
-            if -180.0 > float(i.longitude) > 180.0:
-                continue
+        if -90.0 > float(i.latitude) > 90.0 or -180.0 > float(i.longitude) > 180.0:
+            continue
         point = (i.latitude, i.longitude)
         distance_between_two_points = geodesic(current_point, point).kilometers
 
