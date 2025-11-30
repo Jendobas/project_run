@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from geopy import Point
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -43,6 +44,20 @@ def count_distance(run_id):
 
     distance_field.distance = distance
     distance_field.save()
+
+
+def search_collectible(coordinates):
+    collectible_items = CollectibleItem.objects.all()
+    current_point = Point(coordinates['latitude'], coordinates['longitude'])
+
+    for i in collectible_items:
+        point = (i.latitude, i.longitude)
+        distance_between_two_points = geodesic(current_point, point).kilometers
+
+        if distance_between_two_points < 0.1:
+            run = Run.objects.get(id=coordinates['run'])
+            user = User.objects.get(username=run)
+            i.users.add(user)
 
 
 def check_50_km(run_id):
@@ -193,6 +208,10 @@ class PositionViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        print(request.data)
+        coordinates = request.data
+        print('!!!!!!!!!!!!!')
+        search_collectible(coordinates)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):

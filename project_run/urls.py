@@ -22,5 +22,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api/runs/<run_id>/<condition>/', StartView.as_view()),
     path('api/athlete_info/<user_id>/', AthleteInfoView.as_view()),
-    # path('api/positions/<position_id>/', PositionViewSet.as_view()),
 ]
