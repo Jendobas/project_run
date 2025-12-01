@@ -53,10 +53,11 @@ def search_collectible(coordinates):
     current_point = Point(coordinates['latitude'], coordinates['longitude'])
 
     for i in collectible_items:
-        if -90.0 > float(i.latitude) > 90.0 or -180.0 > float(i.longitude) > 180.0:
+        if not -90.0 <= i.latitude <= 90.0 or not -180.0 <= i.longitude <= 180.0:
             continue
-        point = (i.latitude, i.longitude)
-        distance_between_two_points = geodesic(current_point, point).kilometers
+        else:
+            point = (i.latitude, i.longitude)
+            distance_between_two_points = geodesic(current_point, point).kilometers
 
         if distance_between_two_points < 0.1:
             run = Run.objects.get(id=coordinates['run'])
