@@ -48,6 +48,7 @@ class UserDetailSerializer(UserSerializer):  # дополнительный се
         return [
             {
                 'name': item.name,
+                'uid': item.uid
             }
             for item in obj.collectible_items.all()
         ]
