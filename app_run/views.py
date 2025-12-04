@@ -50,9 +50,8 @@ def search_collectible(coordinates):
     collectible_items = CollectibleItem.objects.all()
     current_point = Point(coordinates['latitude'], coordinates['longitude'])
     for i in collectible_items:
-        latitude = float(i.latitude)
-        longitude = float(i.longitude)
-        print(latitude, longitude)
+        latitude = i.latitude
+        longitude = i.longitude
 
         if not -90.0 <= latitude <= 90.0 or not -180.0 <= longitude <= 180.0:
             continue
