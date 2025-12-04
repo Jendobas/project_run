@@ -54,7 +54,6 @@ class UserDetailSerializer(UserSerializer):  # дополнительный се
         ]
 
 
-
 class RunStatus(serializers.ModelSerializer):
     class Meta:
         model = Run
@@ -85,14 +84,22 @@ class PositionSerializer(serializers.ModelSerializer):
         return value
 
     def validate_latitude(self, value):
-        if not -90.0 <= value <= 90.0:
-            raise serializers.ValidationError("latitude от -90.0 до +90.0")
-        return float(value)
+        try:
+            if isinstance(value, float):
+                if not -90.0 <= value <= 90.0:
+                    raise serializers.ValidationError("latitude от -90.0 до +90.0")
+                return float(value)
+        except (ValueError, TypeError):
+            raise serializers.ValidationError("Неверный формат широты")
 
     def validate_longitude(self, value):
-        if not -180.0 <= value <= 180.0:
-            raise serializers.ValidationError("longitude от -180.0 до +180.0")
-        return float(value)
+        try:
+            if isinstance(value, float):
+                if not -180.0 <= value <= 180.0:
+                    raise serializers.ValidationError("longitude от -180.0 до +180.0")
+            return float(value)
+        except (ValueError, TypeError):
+            raise serializers.ValidationError("Неверный формат долготы")
 
 
 class CollectibleSerializer(serializers.ModelSerializer):
@@ -103,11 +110,19 @@ class CollectibleSerializer(serializers.ModelSerializer):
         fields = ['name', 'uid', 'value', 'latitude', 'longitude', 'picture']
 
     def validate_latitude(self, value):
-        if not -90.0 <= value <= 90.0:
-            raise serializers.ValidationError("latitude от -90.0 до +90.0")
-        return float(value)
+        try:
+            if isinstance(value, float):
+                if not -90.0 <= value <= 90.0:
+                    raise serializers.ValidationError("latitude от -90.0 до +90.0")
+                return float(value)
+        except (ValueError, TypeError):
+            raise serializers.ValidationError("Неверный формат широты")
 
     def validate_longitude(self, value):
-        if not -180.0 <= value <= 180.0:
-            raise serializers.ValidationError("longitude от -180.0 до +180.0")
-        return float(value)
+        try:
+            if isinstance(value, float):
+                if not -180.0 <= value <= 180.0:
+                    raise serializers.ValidationError("longitude от -180.0 до +180.0")
+            return float(value)
+        except (ValueError, TypeError):
+            raise serializers.ValidationError("Неверный формат долготы")
