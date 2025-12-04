@@ -97,7 +97,7 @@ class PositionSerializer(serializers.ModelSerializer):
             if isinstance(value, float):
                 if not -180.0 <= value <= 180.0:
                     raise serializers.ValidationError("longitude от -180.0 до +180.0")
-            return float(value)
+                return float(value)
         except (ValueError, TypeError):
             raise serializers.ValidationError("Неверный формат долготы")
 
@@ -123,6 +123,6 @@ class CollectibleSerializer(serializers.ModelSerializer):
             if isinstance(value, float):
                 if not -180.0 <= value <= 180.0:
                     raise serializers.ValidationError("longitude от -180.0 до +180.0")
-            return float(value)
+                return float(value)
         except (ValueError, TypeError):
             raise serializers.ValidationError("Неверный формат долготы")
