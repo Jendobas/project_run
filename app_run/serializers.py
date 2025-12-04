@@ -49,8 +49,10 @@ class UserDetailSerializer(UserSerializer):  # дополнительный се
             {
                 'name': item.name,
                 'uid': item.uid,
+                'value': item.value,
                 'latitude': item.latitude,
                 'longitude': item.longitude,
+                'picture': item.picture
             }
             for item in obj.collectible_items.all()
         ]
