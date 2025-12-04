@@ -48,15 +48,16 @@ def count_distance(run_id):
 
 def search_collectible(coordinates):
     collectible_items = CollectibleItem.objects.all()
-    if not -90.0 <= float(coordinates['latitude']) <= 90.0 or not -180.0 <= float(coordinates['longitude']) <= 180.0:
-        return
     current_point = Point(coordinates['latitude'], coordinates['longitude'])
-
     for i in collectible_items:
-        if not -90.0 <= i.latitude <= 90.0 or not -180.0 <= i.longitude <= 180.0:
+        latitude = float(i.latitude)
+        longitude = float(i.longitude)
+        print(latitude, longitude)
+
+        if not -90.0 <= latitude <= 90.0 or not -180.0 <= longitude <= 180.0:
             continue
         else:
-            point = (i.latitude, i.longitude)
+            point = (latitude, longitude)
             distance_between_two_points = geodesic(current_point, point).kilometers
 
         if distance_between_two_points < 0.1:
@@ -213,8 +214,7 @@ class PositionViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        coordinates = request.data
-        search_collectible(coordinates)
+        search_collectible(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
