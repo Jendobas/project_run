@@ -34,10 +34,11 @@ def check_runs(run_id):
 
 
 def total_running_time_in_seconds(run_id):
-    result = Position.objects.aggregate(
+    result = Position.objects.filter(run__id=run_id).aggregate(
         first_date=Min('date_time'),
         last_date=Max('date_time')
     )
+
     duration = result['last_date'] - result['first_date']
     total_seconds = int(duration.total_seconds())
     res = Run.objects.get(pk=run_id)
