@@ -58,7 +58,6 @@ class UserDetailSerializer(UserSerializer):  # дополнительный се
         ]
 
 
-
 class RunStatus(serializers.ModelSerializer):
     class Meta:
         model = Run
@@ -78,6 +77,8 @@ class ChallengeSerializer(serializers.ModelSerializer):
 
 
 class PositionSerializer(serializers.ModelSerializer):
+    date_time = serializers.DateTimeField(format='%Y-%m-%dT%H:%M:%S.%f')
+
     class Meta:
         model = Position
         fields = '__all__'

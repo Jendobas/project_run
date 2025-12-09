@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
+from django.db.models import Min, Max, Count
 
 from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
@@ -30,6 +31,18 @@ def check_runs(run_id):
             athlete=item
         )
         new_challange.save()
+
+
+def total_running_time_in_seconds(run_id):
+    result = Position.objects.aggregate(
+        first_date=Min('date_time'),
+        last_date=Max('date_time')
+    )
+    duration = result['last_date'] - result['first_date']
+    total_seconds = int(duration.total_seconds())
+    res = Run.objects.get(pk=run_id)
+    res.run_time_seconds = total_seconds
+    res.save()
 
 
 def count_distance(run_id):
@@ -158,6 +171,7 @@ class StartView(APIView):
                 check_runs(run_id)
                 count_distance(run_id)
                 check_50_km(run_id)
+                total_running_time_in_seconds(run_id)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -18,6 +18,7 @@ class Run(models.Model):
     athlete = models.ForeignKey(User, on_delete=models.CASCADE, related_name='runs')
     status = models.CharField(choices=STATUS, default=INIT)
     distance = models.FloatField(default=0.0, blank=True, null=True)
+    run_time_seconds = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.athlete}'
@@ -38,6 +39,7 @@ class Position(models.Model):
     run = models.ForeignKey(Run, on_delete=models.CASCADE)
     latitude = models.FloatField(default=None)
     longitude = models.FloatField(default=None)
+    date_time = models.DateTimeField(null=True, blank=True)
 
 
 class CollectibleItem(models.Model):
