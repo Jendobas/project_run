@@ -1,5 +1,5 @@
 import openpyxl
-from django.db.models import Sum
+from django.db.models import Sum, Q, Min, Max, Count
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from django.db.models import Min, Max, Count
+# from django.db.models import Min, Max, Count
 
 from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
@@ -123,6 +123,7 @@ class RunViewSet(viewsets.ModelViewSet):
 class GetUsers(viewsets.ReadOnlyModelViewSet):
     # получаем всех пользователей, есть фильтр тренеры/атлеты
     queryset = User.objects.filter(is_superuser=False)
+    queryset = queryset.annotate(runs_finished=Count('runs', filter=Q(runs__status='finished')))
     serializer_class = UserSerializer
 
     filter_backends = [SearchFilter, OrderingFilter]  # Подключаем SearchFilter здесь и сортировку
