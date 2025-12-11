@@ -35,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_runs_finished(self, obj):
         return obj.runs_finished
-    #     return obj.runs.filter(status='finished').count()
+        # return obj.runs.filter(status='finished').count()
 
 
 class UserDetailSerializer(UserSerializer):  # дополнительный сериалайзер для GetUsers

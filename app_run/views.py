@@ -122,8 +122,10 @@ class RunViewSet(viewsets.ModelViewSet):
 
 class GetUsers(viewsets.ReadOnlyModelViewSet):
     # получаем всех пользователей, есть фильтр тренеры/атлеты
-    queryset = User.objects.filter(is_superuser=False)
-    queryset = queryset.annotate(runs_finished=Count('runs', filter=Q(runs__status='finished')))
+    # queryset = User.objects.filter(is_superuser=False)
+    # runs_finished = queryset.annotate(runs_finished=Count('runs', filter=Q(runs__status='finished')))
+    queryset = User.objects.annotate(runs_finished=Count('runs', filter=Q(runs__status='finished')))
+
     serializer_class = UserSerializer
 
     filter_backends = [SearchFilter, OrderingFilter]  # Подключаем SearchFilter здесь и сортировку
