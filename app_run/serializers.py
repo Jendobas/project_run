@@ -33,8 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
             return 'coach'
         return 'athlete'
 
-    def get_runs_finished(self, obj):
-        return obj.runs_finished
+    def get_runs_finished(self, instance):
+        return instance.runs_finished
         # return obj.runs.filter(status='finished').count()
 
 
