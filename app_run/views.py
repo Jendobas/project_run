@@ -122,7 +122,7 @@ class RunViewSet(viewsets.ModelViewSet):
 
 class GetUsers(viewsets.ReadOnlyModelViewSet):
     # получаем всех пользователей, есть фильтр тренеры/атлеты
-    queryset = User.objects.filter(is_superuser=False).annotate(runs_finished=Count('runs',
+    queryset = User.objects.filter(is_superuser=False).annotate(runs_finished=Count('user',
                                                                                     filter=Q(runs__status='finished')))
 
     serializer_class = UserSerializer
