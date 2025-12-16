@@ -40,8 +40,6 @@ def total_running_time_in_seconds(run_id):
         first_date=Min('date_time'),
         last_date=Max('date_time')
     )
-    if not isinstance(result['last_date'], timedelta) or not isinstance(result['first_date'], timedelta):
-        raise TypeError('Неверный тип данных')
     duration = result['last_date'] - result['first_date']
     total_seconds = int(duration.total_seconds())
     res = Run.objects.get(pk=run_id)
