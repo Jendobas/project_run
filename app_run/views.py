@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import openpyxl
 from django.db.models import Sum, Q, Min, Max, Count
 from django.forms import model_to_dict
@@ -38,11 +40,9 @@ def total_running_time_in_seconds(run_id):
         first_date=Min('date_time'),
         last_date=Max('date_time')
     )
-
-    if not result['last_date'] or not result['first_date']:
-        duration = 0
-    else:
-        duration = result['last_date'] - result['first_date']
+    if not isinstance(result['last_date'], timedelta) or not isinstance(result['first_date'], timedelta):
+        raise TypeError('Неверный тип данных')
+    duration = result['last_date'] - result['first_date']
     total_seconds = int(duration.total_seconds())
     res = Run.objects.get(pk=run_id)
     res.run_time_seconds = total_seconds
