@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 import openpyxl
 from django.db.models import Sum, Q, Min, Max, Count
 from django.forms import model_to_dict
@@ -14,7 +12,6 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-# from django.db.models import Min, Max, Count
 
 from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
@@ -40,6 +37,8 @@ def total_running_time_in_seconds(run_id):
         first_date=Min('date_time'),
         last_date=Max('date_time')
     )
+    if not result['last_date'] or not result['first_date']:
+        raise TypeError('Нет информации о дате')
     duration = result['last_date'] - result['first_date']
     total_seconds = int(duration.total_seconds())
     res = Run.objects.get(pk=run_id)
