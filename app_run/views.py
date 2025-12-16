@@ -38,8 +38,10 @@ def total_running_time_in_seconds(run_id):
         first_date=Min('date_time'),
         last_date=Max('date_time')
     )
-
-    duration = result['last_date'] - result['first_date']
+    try:
+        duration = result['last_date'] - result['first_date']
+    except TypeError:
+        raise TypeError("Ожидалось число, а пришло None или неподходящий тип")
     total_seconds = int(duration.total_seconds())
     res = Run.objects.get(pk=run_id)
     res.run_time_seconds = total_seconds
