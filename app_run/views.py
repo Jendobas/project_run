@@ -39,8 +39,7 @@ def total_running_time_in_seconds(run_id):
     )
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!')
     print(result['last_date'], result['first_date'])
-    if not result['last_date'] or not result['first_date']:
-        raise TypeError('Нет информации о дате')
+
     duration = result['last_date'] - result['first_date']
     total_seconds = int(duration.total_seconds())
     res = Run.objects.get(pk=run_id)
