@@ -39,12 +39,13 @@ def total_running_time_in_seconds(run_id):
     )
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!')
     print(result['last_date'], result['first_date'])
+    if result['last_date'] and result['first_date']:
 
-    duration = result['last_date'] - result['first_date']
-    total_seconds = int(duration.total_seconds())
-    res = Run.objects.get(pk=run_id)
-    res.run_time_seconds = total_seconds
-    res.save()
+        duration = result['last_date'] - result['first_date']
+        total_seconds = int(duration.total_seconds())
+        res = Run.objects.get(pk=run_id)
+        res.run_time_seconds = total_seconds
+        res.save()
 
 
 def count_distance(run_id):
