@@ -232,6 +232,13 @@ class PositionViewSet(viewsets.ModelViewSet):
         search_collectible(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def perform_create(self, serializer):
+        speed = serializer.validated_data['speed']
+
+        calculated_field = ...  # Например вычисляется какое то поле calculated_field и изменяется name
+
+        serializer.save(name=speed, calculated_field=calculated_field)  # Запись добавленных и измененных полей
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
