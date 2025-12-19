@@ -37,10 +37,7 @@ def total_running_time_in_seconds(run_id):
         first_date=Min('date_time'),
         last_date=Max('date_time')
     )
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    print(result['last_date'], result['first_date'])
     if result['last_date'] and result['first_date']:
-
         duration = result['last_date'] - result['first_date']
         total_seconds = int(duration.total_seconds())
         res = Run.objects.get(pk=run_id)
