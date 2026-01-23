@@ -21,7 +21,6 @@ class Run(models.Model):
     run_time_seconds = models.IntegerField(default=0)
     speed = models.FloatField(blank=True, null=True)
 
-
     def __str__(self):
         return f'{self.athlete}'
 

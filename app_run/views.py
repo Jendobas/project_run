@@ -4,6 +4,8 @@ from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from geopy import Point
+from geopy.distance import geodesic
+from datetime import datetime
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -12,6 +14,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
+from dateutil import parser
 
 from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
@@ -228,16 +231,33 @@ class PositionViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        self.perform_create(request, serializer)
         search_collectible(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        speed = serializer.validated_data['speed']
+    def perform_create(self, request, serializer):
+        run = request.data['run']
+        prev_positions = Position.objects.filter(run=run).last()
+        current_position = request.data['date_time']
 
-        calculated_field = ...  # Например вычисляется какое то поле calculated_field и изменяется name
+        point1 = Point(prev_positions.latitude, prev_positions.longitude)
+        point2 = Point(request.data['latitude'], request.data['longitude'])
 
-        serializer.save(name=speed, calculated_field=calculated_field)  # Запись добавленных и измененных полей
+        date = str(prev_positions.date_time)[:25]
+        time1 = parser.parse(date)
+        time2 = parser.parse(current_position.replace('T', ' '))
+        delta_time = (time2 - time1).total_seconds()
+
+        distance_m = geodesic(point1, point2).meters
+
+        speed_ms = round(distance_m / delta_time, 2)
+        print(distance_m)
+        print(delta_time)
+        print(speed_ms)
+        instance = serializer.save()
+        instance.speed = speed_ms
+        instance.save()
+        print(instance)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
