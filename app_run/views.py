@@ -249,15 +249,19 @@ class PositionViewSet(viewsets.ModelViewSet):
         delta_time = (time2 - time1).total_seconds()
 
         distance_m = geodesic(point1, point2).meters
-
         speed_ms = round(distance_m / delta_time, 2)
-        print(distance_m)
-        print(delta_time)
-        print(speed_ms)
+
+        distance_km = geodesic(point1, point2).kilometers
+        all_distance = prev_positions.distance
+        if all_distance:
+            all_distance += distance_km
+        else:
+            all_distance = distance_km
+
         instance = serializer.save()
         instance.speed = speed_ms
+        instance.distance = round(all_distance, 2)
         instance.save()
-        print(instance)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
