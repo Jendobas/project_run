@@ -1,5 +1,5 @@
 import openpyxl
-from django.db.models import Sum, Q, Min, Max, Count
+from django.db.models import Sum, Q, Min, Max, Count, Avg
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -20,6 +20,14 @@ from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleIte
 from app_run.serializers import RunSerializer, UserSerializer, RunStatus, AthleteInfoSerializer, ChallengeSerializer, \
     PositionSerializer, CollectibleSerializer, UserDetailSerializer
 from geopy.distance import geodesic
+
+
+def all_positions_speed(run_id):
+    items = Position.objects.filter(run__id=run_id).aggregate(Avg('speed'))
+    res = round(items['speed__avg'], 2)
+    athlete = Run.objects.get(pk=run_id)
+    athlete.speed = res
+    athlete.save()
 
 
 def check_runs(run_id):
@@ -177,6 +185,7 @@ class StartView(APIView):
                 count_distance(run_id)
                 check_50_km(run_id)
                 total_running_time_in_seconds(run_id)
+                all_positions_speed(run_id)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
